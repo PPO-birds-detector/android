@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="pref_key_bulk_settings"
+        android:title="@string/pref_bulk_title">
+        <preferences.IntEditTextPreference
+            android:key="@string/key_bulk_noise_threshold"
+            android:maxLength="4"
+            android:numeric="integer"
+            android:summary="25"
+            android:title="@string/bulk_noise_threshold" />
+        <preferences.IntEditTextPreference
+            android:key="@string/key_bulk_diff_threshold"
+            android:maxLength="4"
+            android:numeric="integer"
+            android:summary="100"
+            android:title="@string/bulk_diff_threshold" />
+        <preferences.IntEditTextPreference
+            android:key="@string/key_bulk_block_size"
+            android:maxLength="3"
+            android:numeric="integer"
+            android:summary="50"
+            android:title="@string/bulk_block_size" />
+    </PreferenceCategory>
+</PreferenceScreen>
