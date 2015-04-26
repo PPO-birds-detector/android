@@ -3,4 +3,14 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <string name="pref_bulk_title">Bulk Detection Settings</string>
+    <string name="key_bulk_noise_threshold">noise_threshold</string>
+    <string name="bulk_noise_threshold">Noise Threshold value</string>
+    <string name="key_bulk_diff_threshold">diff_threshold</string>
+    <string name="bulk_diff_threshold">Diff Threshold value</string>
+    <string name="key_bulk_block_size">block_size</string>
+    <string name="bulk_block_size">Bulk Detection block size</string>
+
 </resources>

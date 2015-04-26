@@ -46,4 +46,5 @@ public class DetectorView extends View {
             canvas.drawRect(obj.x * width, obj.y * height, (obj.x + obj.width) * width, (obj.y + obj.height) * height, mPaint);
         }
     }
+
 }

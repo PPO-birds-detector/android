@@ -1,5 +1,6 @@
 package io.github.ppo_birds_detector.android;
 
+import android.content.Intent;
 import android.hardware.Camera;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -7,11 +8,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import detectors.BulkDetector;
+
 public class MainActivity extends ActionBarActivity {
 
     private Camera mCamera;
     private CameraPreview mCameraPreview;
-    private Detector mDetector;
+    private IDetector mDetector;
     private DetectorView mDetectorView;
 
     @Override
@@ -35,10 +38,11 @@ public class MainActivity extends ActionBarActivity {
                 // Important: Call startPreview() to start updating the preview surface.
                 // Preview must be started before you can take a picture.
                 mCamera.startPreview();
+                mDetector.setCameraParameters(mCamera.getParameters());
             }
         });
         mDetectorView = (DetectorView) findViewById(R.id.detector);
-        mDetector = new SimpleDetector();
+        mDetector = new BulkDetector();
         mDetector.setDetectorView(mDetectorView);
     }
 
@@ -72,6 +76,8 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent i = new Intent(this, SettingsActivity.class);
+            startActivity(i);
             return true;
         }
 
@@ -101,8 +107,9 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public interface Detector {
+    public interface IDetector {
         public void detect(byte[] frame);
         public void setDetectorView(DetectorView view);
+        public void setCameraParameters(Camera.Parameters parameters);
     }
 }
