@@ -7,6 +7,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import detectors.Detector;
+import detectors.MockDetector;
+
 public class MainActivity extends ActionBarActivity {
 
     private Camera mCamera;
@@ -35,10 +38,11 @@ public class MainActivity extends ActionBarActivity {
                 // Important: Call startPreview() to start updating the preview surface.
                 // Preview must be started before you can take a picture.
                 mCamera.startPreview();
+                mDetector.setCameraParameters(mCamera.getParameters());
             }
         });
         mDetectorView = (DetectorView) findViewById(R.id.detector);
-        mDetector = new SimpleDetector();
+        mDetector = new MockDetector();
         mDetector.setDetectorView(mDetectorView);
     }
 
@@ -101,7 +105,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public interface Detector {
+    public interface IDetector {
         public void detect(byte[] frame);
         public void setDetectorView(DetectorView view);
     }

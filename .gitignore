@@ -25,3 +25,17 @@ proguard/
 
 # Log Files
 *.log
+Android/.idea/.name
+Android/.idea/compiler.xml
+Android/app/build.gradle
+Android/.idea/copyright/profiles_settings.xml
+Android/.idea/encodings.xml
+Android/app/build.gradle
+Android/app/build.gradle
+Android/app/build.gradle
+Android/.idea/gradle.xml
+Android/.idea/misc.xml
+Android/.idea/modules.xml
+Android/.idea/scopes/scope_settings.xml
+Android/.idea/vcs.xml
+Android/app/build.gradle
