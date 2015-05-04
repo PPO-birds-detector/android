@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import detectors.BulkDetector;
 import detectors.Detector;
 import detectors.MockDetector;
 
@@ -42,7 +43,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
         mDetectorView = (DetectorView) findViewById(R.id.detector);
-        mDetector = new MockDetector();
+        mDetector = new BulkDetector();
         mDetector.setDetectorView(mDetectorView);
     }
 
