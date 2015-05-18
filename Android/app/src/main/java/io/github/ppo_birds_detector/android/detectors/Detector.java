@@ -1,10 +1,11 @@
-package detectors;
+package io.github.ppo_birds_detector.android.detectors;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
+import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -21,6 +22,7 @@ public abstract class Detector implements MainActivity.IDetector {
 
     private Camera.Parameters _parameters;
     private Camera.Size _cameraSize;
+    protected ImageView mFilteredView;
 
     public void setCameraParameters(Camera.Parameters parameters){
         _parameters = parameters;
@@ -29,7 +31,7 @@ public abstract class Detector implements MainActivity.IDetector {
     protected Bitmap dataToBitmap(byte [] data){
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         YuvImage yuv = new YuvImage(data, _parameters.getPreviewFormat(), _cameraSize.width, _cameraSize.height, null);
-
+        
         // bWidth and bHeight define the size of the bitmap you wish the fill with the preview image
         yuv.compressToJpeg(new Rect(0, 0, _cameraSize.width, _cameraSize.height), 50, out);
         byte[] bytes = out.toByteArray();
@@ -46,6 +48,10 @@ public abstract class Detector implements MainActivity.IDetector {
     @Override
     public void setDetectorView(DetectorView view) {
         mDetectorView = view;
+    }
+
+    public void setFilteredView(ImageView filteredView) {
+        mFilteredView = filteredView;
     }
 
 }

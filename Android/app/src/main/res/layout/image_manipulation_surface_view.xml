@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:id="@+id/layout">
+    
+    <io.github.ppo_birds_detector.android.WideCameraView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/image_manipulations_activity_surface_view" />
+
+    <io.github.ppo_birds_detector.android.DetectorView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/detector" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Touch to toggle"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentRight="false"
+            android:layout_centerHorizontal="true"
+            android:textSize="40sp"
+            android:textColor="#ffc8c8c8"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="24dp"
+            android:alpha="0.3" />
+    </RelativeLayout>
+
+</FrameLayout>

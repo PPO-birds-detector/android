@@ -5,10 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.TextureView;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -20,6 +16,7 @@ import java.util.List;
 public class DetectorView extends View {
     private List<DetectedObject> mDetectedObjects;
     private Paint mPaint;
+    private float mCameraRatio;
 
     public DetectorView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -30,20 +27,32 @@ public class DetectorView extends View {
         mPaint.setStrokeWidth(4.0f);
     }
 
-    public void setDetectedObjects(List<DetectedObject> detectedObjects) {
-//        Log.d("TAG", "setDetectedObj");
-        mDetectedObjects = detectedObjects;
-        invalidate();
-    }
-
     @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-//        Log.d("TAG", "draw");
-        float width = canvas.getWidth();
-        float height = canvas.getHeight();
+        float cWidth = canvas.getWidth();
+        float cHeight = canvas.getHeight();
+        float top, left, bottom, right;
+        float ratio = cWidth / cHeight;
+
+        float width = cWidth * (mCameraRatio / ratio);
+        int offX = (int)((cWidth - width) / 2.0f);
+
         for (DetectedObject obj : mDetectedObjects) {
-            canvas.drawRect(obj.x * width, obj.y * height, (obj.x + obj.width) * width, (obj.y + obj.height) * height, mPaint);
+            left = offX + obj.x * width;
+            top = obj.y * cHeight;
+            right = offX + (obj.x + obj.width) * width;
+            bottom = (obj.y + obj.height) * cHeight;
+            canvas.drawRect(left, top, right, bottom, mPaint);
         }
+    }
+
+    public void setDetectedObjects(List<DetectedObject> list) {
+        mDetectedObjects = list;
+        postInvalidate();
+    }
+
+    public void setRatio(float cameraRatio) {
+        mCameraRatio = cameraRatio;
     }
 }

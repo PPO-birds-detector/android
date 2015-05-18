@@ -1,6 +1,10 @@
-package detectors;
+package io.github.ppo_birds_detector.android.detectors;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +30,8 @@ public class BulkDetector extends Detector {
     protected List<DetectedObject> processFrame(byte[] frame) {
         List<DetectedObject> detectedObjects;
         Bitmap nextFrame = dataToBitmap(frame);
+        nextFrame = Bitmap.createScaledBitmap(nextFrame, 256, 256, false);
+//        FastBitmap nextFrame = new FastBitmap();
 
         if (prevFrame == null) {
             prevFrame = nextFrame;
@@ -37,13 +43,37 @@ public class BulkDetector extends Detector {
         return detectedObjects;
     }
 
+    public Bitmap toGrayscale(Bitmap bmpOriginal) {
+        int width, height;
+        height = bmpOriginal.getHeight();
+        width = bmpOriginal.getWidth();
+
+        Bitmap bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+        Canvas c = new Canvas(bmpGrayscale);
+        Paint paint = new Paint();
+        ColorMatrix cm = new ColorMatrix();
+        cm.setSaturation(0);
+        ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
+        paint.setColorFilter(f);
+        c.drawBitmap(bmpOriginal, 0, 0, paint);
+        return bmpGrayscale;
+    }
+
     private List<DetectedObject> BulkMotionDetect(Bitmap previousFrame, Bitmap currentFrame) {
         List<DetectedObject> detectedObjects;
 
+        Bitmap bmp = toGrayscale(previousFrame);
+        Bitmap bmp2 = toGrayscale(currentFrame);
+
         FastBitmap prev, next, filtered;
-        prev = new FastBitmap(previousFrame);
-        next = new FastBitmap(currentFrame);
+        prev = new FastBitmap(bmp);
+        next = new FastBitmap(bmp2);
+//        prev = new FastBitmap(previousFrame);
+//        next = new FastBitmap(currentFrame);
         filtered = getFilteredFrame(prev, next);
+
+        if (mFilteredView != null)
+            mFilteredView.setImageBitmap(filtered.toBitmap());
 
         detectedObjects = findDetectedObjects(filtered);
 
@@ -54,14 +84,14 @@ public class BulkDetector extends Detector {
         // create filters
         Difference differenceFilter = new Difference();
         Threshold thresholdFilter = new Threshold(THRESHOLD);
-        Grayscale grayscale = new Grayscale();
+        Grayscale grayscale = new Grayscale(Grayscale.Algorithm.Lightness);
         Erosion erosion = new Erosion();
 
         // apply filters
-        previousFrame.toRGB();
-        currentFrame.toRGB();
-        grayscale.applyInPlace(previousFrame);
-        grayscale.applyInPlace(currentFrame);
+        previousFrame.toGrayscale();
+        currentFrame.toGrayscale();
+//        grayscale.applyInPlace(previousFrame);
+//        grayscale.applyInPlace(currentFrame);
 
         // set background frame as an overlay for difference filter
         differenceFilter.setOverlayImage(previousFrame);

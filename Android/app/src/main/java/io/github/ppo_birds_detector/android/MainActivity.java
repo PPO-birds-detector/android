@@ -6,10 +6,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
-import detectors.BulkDetector;
-import detectors.Detector;
-import detectors.MockDetector;
+import io.github.ppo_birds_detector.android.detectors.BulkDetector;
+import io.github.ppo_birds_detector.android.detectors.Detector;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -17,6 +17,7 @@ public class MainActivity extends ActionBarActivity {
     private CameraPreview mCameraPreview;
     private Detector mDetector;
     private DetectorView mDetectorView;
+    private ImageView mFilteredView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,7 @@ public class MainActivity extends ActionBarActivity {
         mDetectorView = (DetectorView) findViewById(R.id.detector);
         mDetector = new BulkDetector();
         mDetector.setDetectorView(mDetectorView);
+        mDetector.setFilteredView(mFilteredView);
     }
 
     @Override

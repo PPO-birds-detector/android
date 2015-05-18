@@ -1,4 +1,4 @@
-package detectors;
+package io.github.ppo_birds_detector.android.detectors;
 
 import java.util.ArrayList;
 import java.util.List;
