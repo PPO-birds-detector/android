@@ -12,12 +12,11 @@ import java.util.List;
 
 import io.github.ppo_birds_detector.android.DetectedObject;
 import io.github.ppo_birds_detector.android.DetectorView;
-import io.github.ppo_birds_detector.android.MainActivity;
 
 /**
  * Created by Alek on 2015-04-26.
  */
-public abstract class Detector implements MainActivity.IDetector {
+public abstract class Detector implements IDetector {
     protected DetectorView mDetectorView;
 
     private Camera.Parameters _parameters;

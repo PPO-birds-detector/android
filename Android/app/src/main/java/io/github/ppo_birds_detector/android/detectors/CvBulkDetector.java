@@ -18,7 +18,7 @@ import io.github.ppo_birds_detector.android.DetectorView;
  * Created by ike on 17/05/15.
  */
 public class CvBulkDetector extends CvDetector {
-    private static final double THRESHOLD_DETECT = 0.5;
+    private static final double THRESHOLD_DETECT = 10.5;
     public static int BLOCKS_H = 20;
     public static int BLOCKS_V = 15;
     public static float THRESHOLD = 30.0f;

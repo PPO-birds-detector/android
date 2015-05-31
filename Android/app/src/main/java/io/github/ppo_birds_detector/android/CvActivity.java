@@ -17,6 +17,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 
+import io.github.ppo_birds_detector.android.detectors.CvBlobDetector;
 import io.github.ppo_birds_detector.android.detectors.CvBulkDetector;
 import io.github.ppo_birds_detector.android.detectors.CvDetector;
 
@@ -50,7 +51,7 @@ public class CvActivity extends Activity implements CameraBridgeViewBase.CvCamer
 
     /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState){
         Log.i(TAG, "called onCreate");
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -61,7 +62,8 @@ public class CvActivity extends Activity implements CameraBridgeViewBase.CvCamer
         mOpenCvCameraView.setCvCameraViewListener(this);
 
         mDetectorView = (DetectorView) findViewById(R.id.detector);
-        mDetector = new CvBulkDetector();
+
+        mDetector = new CvBlobDetector();
         mDetector.setDetectorView(mDetectorView);
 
         mLayout = (FrameLayout) findViewById(R.id.layout);
