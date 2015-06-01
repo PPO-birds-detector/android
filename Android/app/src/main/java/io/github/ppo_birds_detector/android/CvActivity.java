@@ -5,20 +5,21 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
-import android.view.MotionEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 
-import io.github.ppo_birds_detector.android.detectors.CvBlobDetector;
 import io.github.ppo_birds_detector.android.detectors.CvBulkDetector;
+import io.github.ppo_birds_detector.android.detectors.CvEdgeDetector;
 import io.github.ppo_birds_detector.android.detectors.CvDetector;
 
 /**
@@ -63,7 +64,7 @@ public class CvActivity extends Activity implements CameraBridgeViewBase.CvCamer
 
         mDetectorView = (DetectorView) findViewById(R.id.detector);
 
-        mDetector = new CvBlobDetector();
+        mDetector = new CvEdgeDetector();
         mDetector.setDetectorView(mDetectorView);
 
         mLayout = (FrameLayout) findViewById(R.id.layout);
@@ -93,6 +94,42 @@ public class CvActivity extends Activity implements CameraBridgeViewBase.CvCamer
         } else {
             Log.d(TAG, "OpenCV library found inside package. Using it!");
             mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.detectors_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.select_bulk_detector:
+                mDetector.onStop();
+                mDetector = new CvBulkDetector();
+                initDetector();
+                return true;
+            case R.id.select_edge_detector:
+                mDetector.onStop();
+                mDetector = new CvEdgeDetector();
+                initDetector();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void initDetector(){
+        if (mDetector != null) {
+            if (mDetectorView == null) {
+                mDetectorView = (DetectorView) findViewById(R.id.detector);
+            }
+            mDetector.onStart();
+            mDetector.setDetectorView(mDetectorView);
         }
     }
 
