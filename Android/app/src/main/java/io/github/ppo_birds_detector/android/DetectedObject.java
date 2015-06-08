@@ -10,10 +10,18 @@ public class DetectedObject {
     public float width;
     public float height;
 
+    public int id;
+
     public DetectedObject(float x, float y, float width, float height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+    }
+
+    public DetectedObject(float x, float y, float width, float height, int id) {
+        this(x, y, width, height);
+
+        this.id = id;
     }
 }

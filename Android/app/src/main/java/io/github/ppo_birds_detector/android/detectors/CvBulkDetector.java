@@ -146,7 +146,7 @@ public class CvBulkDetector extends CvDetector {
         return mEroded;
     }
 
-    private List<DetectedObject> findDetectedObjects(Mat frame, List<DetectedObject> detectedObjects) {
+    protected List<DetectedObject> findDetectedObjects(Mat frame, List<DetectedObject> detectedObjects) {
         int width = frame.width();
         int height = frame.height();
 
@@ -170,7 +170,7 @@ public class CvBulkDetector extends CvDetector {
         return detectedObjects;
     }
 
-    private boolean detectInBlock(Mat bmp, int startX, int startY, int blockSizeX, int blockSizeY) {
+    protected boolean detectInBlock(Mat bmp, int startX, int startY, int blockSizeX, int blockSizeY) {
         Mat subMat = bmp.submat(startY, startY + blockSizeY, startX, startX + blockSizeX);
         double val = Core.sumElems(subMat).val[0] / (blockSizeX * blockSizeY);
         return val > THRESHOLD_DETECT;

@@ -16,6 +16,7 @@ import java.util.List;
 public class DetectorView extends View {
     private List<DetectedObject> mDetectedObjects;
     private Paint mPaint;
+    private int [] mColors = {Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.MAGENTA};
     private float mCameraRatio;
 
     public DetectorView(Context context, AttributeSet attrs) {
@@ -39,11 +40,19 @@ public class DetectorView extends View {
         int offX = (int)((cWidth - width) / 2.0f);
 
         for (DetectedObject obj : mDetectedObjects) {
+            // get color
+            int colorId = obj.id % mColors.length;
+            mPaint.setColor(mColors[colorId]);
+
+            // draw the bounding rectangle
             left = offX + obj.x * width;
             top = obj.y * cHeight;
             right = offX + (obj.x + obj.width) * width;
             bottom = (obj.y + obj.height) * cHeight;
             canvas.drawRect(left, top, right, bottom, mPaint);
+
+            // draw speed vector
+            //canvas.drawLine(left, top, right, bottom, mPaint);
         }
     }
 
