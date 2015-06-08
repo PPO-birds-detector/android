@@ -114,6 +114,11 @@ public class CvActivity extends Activity implements CameraBridgeViewBase.CvCamer
                 mDetector = new CvBulkDetector();
                 initDetector();
                 return true;
+            case R.id.select_block_detector:
+                mDetector.onStop();
+                mDetector = new CvBlockDetector();
+                initDetector();
+                return true;
             case R.id.select_edge_detector:
                 mDetector.onStop();
                 mDetector = new CvEdgeDetector();

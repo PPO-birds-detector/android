@@ -3,6 +3,9 @@
     <item android:id="@+id/select_bulk_detector"
         android:title="Bulk Detector"
         />
+    <item android:id="@+id/select_block_detector"
+        android:title="Block Detector"
+        />
     <item android:id="@+id/select_edge_detector"
         android:title="Edge Detector"
         />
