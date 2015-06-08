@@ -21,7 +21,7 @@ import org.opencv.core.Mat;
 import io.github.ppo_birds_detector.android.detectors.CvBulkDetector;
 import io.github.ppo_birds_detector.android.detectors.CvEdgeDetector;
 import io.github.ppo_birds_detector.android.detectors.CvDetector;
-import io.github.ppo_birds_detector.android.detectors.CvSpeedDetector;
+import io.github.ppo_birds_detector.android.detectors.CvBlockDetector;
 
 /**
  * Created by ike on 17/05/15.
@@ -65,7 +65,7 @@ public class CvActivity extends Activity implements CameraBridgeViewBase.CvCamer
 
         mDetectorView = (DetectorView) findViewById(R.id.detector);
 
-        mDetector = new CvSpeedDetector();
+        mDetector = new CvBlockDetector();
         mDetector.setDetectorView(mDetectorView);
 
         mLayout = (FrameLayout) findViewById(R.id.layout);

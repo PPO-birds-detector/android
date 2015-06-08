@@ -1,21 +1,16 @@
 package io.github.ppo_birds_detector.android.detectors;
 
-import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
-
-import java.sql.Struct;
-import java.util.ArrayList;
 import java.util.List;
-
 import io.github.ppo_birds_detector.android.DetectedObject;
-import io.github.ppo_birds_detector.android.DetectorView;
 
-public class CvSpeedDetector extends CvBulkDetector {
+/**
+ * This is an extension of the BulkDetector
+ * it links detected motion blocks into whole objects.
+ * This should allow for future middle mass and speed
+ * computations.
+ */
+public class CvBlockDetector extends CvBulkDetector {
 
     public static int BLOCKS_H = 16;
     public static int BLOCKS_V = 12;
@@ -44,19 +39,32 @@ public class CvSpeedDetector extends CvBulkDetector {
                     int gridY = y / blockSizeY;
                     detectedGrid[gridX][gridY] = true;
 
-                    if (gridX > 0 && detectedGrid[gridX - 1][gridY]){
-                        int id = idGrid[gridX - 1][gridY];
-                        DetectedObject detectedObject = detectedObjects.get(id - 1);
-                        detectedObject.width = Math.max(x, detectedObject.width);
-                    }else if (gridY > 0 && detectedGrid[gridX][gridY - 1]){
+                    if (gridY > 0 && detectedGrid[gridX][gridY - 1]) {
                         int id = idGrid[gridX][gridY - 1];
                         DetectedObject detectedObject = detectedObjects.get(id - 1);
-                        detectedObject.height = Math.max(y, detectedObject.height);
+                        detectedObject.height = Math.max(y + blockSizeY, detectedObject.height);
+
+                        if (gridX > 0 && detectedGrid[gridX - 1][gridY]){
+                            int prevId = idGrid[gridX][gridY - 1];
+
+                            if (prevId != id) {
+                                // link the object from the previous cell to this object
+                                detectedObject.x = Math.min(detectedObject.x, x);
+                                detectedObjects.set(prevId - 1, detectedObject);
+                            }
+                        }
+                    }
+                    else if (gridX > 0 && detectedGrid[gridX - 1][gridY]){
+                        int id = idGrid[gridX - 1][gridY];
+                        DetectedObject detectedObject = detectedObjects.get(id - 1);
+                        detectedObject.width = Math.max(x + blockSizeX, detectedObject.width);
                     }
                     else{
                         // new object
                         idCounter++;
 
+                        /* TODO: the information about the current end position (endX and endY) is currently stored
+                         in the width and height fields */
                         DetectedObject detectedObject = new DetectedObject(x, y, x + blockSizeX, y + blockSizeY, idCounter);
                         detectedObjects.add(detectedObject);
                     }
@@ -65,6 +73,7 @@ public class CvSpeedDetector extends CvBulkDetector {
             }
         }
 
+        // compute the object's width and height
         for (DetectedObject detectedObject : detectedObjects){
             detectedObject.width = (detectedObject.width - detectedObject.x) / width;
             detectedObject.height = (detectedObject.height - detectedObject.y) / height;
