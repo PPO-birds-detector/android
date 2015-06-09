@@ -51,8 +51,10 @@ public class DetectorView extends View {
             bottom = (obj.y + obj.height) * cHeight;
             canvas.drawRect(left, top, right, bottom, mPaint);
 
-            // draw speed vector
-            //canvas.drawLine(left, top, right, bottom, mPaint);
+            if (obj.hasSpeed) {
+                // draw speed vector
+                canvas.drawLine(obj.speedStartX, obj.speedStartY, obj.speedEndX, obj.speedEndY, mPaint);
+            }
         }
     }
 

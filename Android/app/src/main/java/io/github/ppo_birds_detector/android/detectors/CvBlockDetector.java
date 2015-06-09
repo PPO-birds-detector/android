@@ -1,6 +1,8 @@
 package io.github.ppo_birds_detector.android.detectors;
 
 import org.opencv.core.Mat;
+
+import java.util.ArrayList;
 import java.util.List;
 import io.github.ppo_birds_detector.android.DetectedObject;
 
@@ -14,6 +16,8 @@ public class CvBlockDetector extends CvBulkDetector {
 
     public static int BLOCKS_H = 16;
     public static int BLOCKS_V = 12;
+
+    private List<DetectedObject> mPrevDetectedObjects = null;
 
     @Override
     protected List<DetectedObject> findDetectedObjects(Mat frame, List<DetectedObject> detectedObjects) {
@@ -73,6 +77,17 @@ public class CvBlockDetector extends CvBulkDetector {
             }
         }
 
+        // remove duplicates
+        boolean [] ids = new boolean [idCounter + 1];
+        List<DetectedObject> nonDuplicateObjects = new ArrayList<DetectedObject>();
+        for (DetectedObject detectedObject : detectedObjects){
+            if (!ids[detectedObject.id]){
+                ids[detectedObject.id] = true;
+                nonDuplicateObjects.add(detectedObject);
+            }
+        }
+        detectedObjects = nonDuplicateObjects;
+
         // compute the object's width and height
         for (DetectedObject detectedObject : detectedObjects){
             detectedObject.width = (detectedObject.width - detectedObject.x) / width;
@@ -82,6 +97,46 @@ public class CvBlockDetector extends CvBulkDetector {
             detectedObject.y = detectedObject.y / height;
         }
 
+        calculateSpeed(detectedObjects);
+
+        mPrevDetectedObjects = detectedObjects;
+
         return detectedObjects;
+    }
+
+    private static float POS_THRESHOLD = 0.2f;
+    private static float SIZE_THRESHOLD = 0.15f;
+
+    private void calculateSpeed(List<DetectedObject> detectedObjects){
+        if (mPrevDetectedObjects == null){
+            return;
+        }
+
+        for (DetectedObject curr : detectedObjects){
+            DetectedObject prev = null;
+            for (DetectedObject prevObj : mPrevDetectedObjects){
+                float xDiff = curr.x - prevObj.x;
+                float yDiff = curr.y - prevObj.y;
+                float wDiff = curr.width - prevObj.width;
+                float hDiff = curr.height - prevObj.height;
+
+                if (Math.abs(xDiff) < POS_THRESHOLD && Math.abs(yDiff) < POS_THRESHOLD
+                        && Math.abs(wDiff) < SIZE_THRESHOLD && Math.abs(hDiff) < SIZE_THRESHOLD){
+                    // matched pair
+                    prev = prevObj;
+                    break;
+                }
+            }
+            if (prev != null) {
+                curr.hasSpeed = true;
+
+                curr.speedStartX = Math.max(curr.x, prev.x);
+                curr.speedEndX = Math.min(curr.x, prev.x);
+                curr.speedStartY = Math.max(curr.y, prev.y);
+                curr.speedEndY = Math.min(curr.y, prev.y);
+
+                mPrevDetectedObjects.remove(prev);
+            }
+        }
     }
 }

@@ -10,6 +10,12 @@ public class DetectedObject {
     public float width;
     public float height;
 
+    public boolean hasSpeed = false;
+    public float speedStartX;
+    public float speedEndX;
+    public float speedStartY;
+    public float speedEndY;
+
     public int id;
 
     public DetectedObject(float x, float y, float width, float height) {
