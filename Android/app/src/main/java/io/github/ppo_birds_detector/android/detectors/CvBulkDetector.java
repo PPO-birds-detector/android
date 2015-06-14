@@ -70,7 +70,7 @@ public class CvBulkDetector extends CvDetector {
     }
 
     @Override
-    public Mat onFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+    public Mat onFrame(Mat rgba, Mat gray) {
 //        Mat rgba = inputFrame.rgba();
 //        Size sizeRgba = rgba.size();
 //
@@ -84,7 +84,6 @@ public class CvBulkDetector extends CvDetector {
 //        int height = rows * 3 / 4;
 
 
-        Mat rgba = inputFrame.rgba();
         Size size = rgba.size();
         int rows = (int) size.height;
         int cols = (int) size.width;
@@ -93,7 +92,6 @@ public class CvBulkDetector extends CvDetector {
 //        Mat wide = rgba.submat(top, top + height, 0, cols);
 
 
-        Mat gray = inputFrame.gray();
 
         List<DetectedObject> detectedObjects = new ArrayList<>();
         Mat detection = detectMotion(mPrevMat, gray, detectedObjects);
@@ -101,7 +99,7 @@ public class CvBulkDetector extends CvDetector {
 
         mPrevMat = gray;
 
-        return mDisplayRaw ? inputFrame.rgba() : detection;
+        return mDisplayRaw ? rgba : detection;
     }
 
     private Mat detectMotion(Mat prev, Mat current, List<DetectedObject> detectedObjects) {

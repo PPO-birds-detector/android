@@ -13,7 +13,7 @@ public abstract class CvDetector {
 
     public abstract void onStop();
 
-    public abstract Mat onFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame);
+    public abstract Mat onFrame(Mat rgba, Mat gray);
 
     public abstract void setDetectorView(DetectorView view);
 

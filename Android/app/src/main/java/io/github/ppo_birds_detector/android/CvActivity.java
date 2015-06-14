@@ -162,6 +162,6 @@ public class CvActivity extends Activity implements CameraBridgeViewBase.CvCamer
     }
 
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        return mDetector.onFrame(inputFrame);
+        return mDetector.onFrame(inputFrame.rgba(), inputFrame.gray());
     }
 }

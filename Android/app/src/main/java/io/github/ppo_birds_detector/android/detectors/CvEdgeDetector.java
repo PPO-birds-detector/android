@@ -81,16 +81,14 @@ public class CvEdgeDetector extends CvDetector {
     }
 
     @Override
-    public Mat onFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        Mat gray = inputFrame.gray();
-
+    public Mat onFrame(Mat rgba, Mat gray) {
         List<DetectedObject> detectedObjects = new ArrayList<>();
         Mat detection = detectMotion(mPrevMat, gray, detectedObjects);
         mDetectorView.setDetectedObjects(detectedObjects);
 
         mPrevMat = gray;
 
-        return mDisplayRaw ? inputFrame.rgba() : detection;
+        return mDisplayRaw ? rgba : detection;
     }
 
     private Mat detectMotion(Mat prev, Mat current, List<DetectedObject> detectedObjects) {
