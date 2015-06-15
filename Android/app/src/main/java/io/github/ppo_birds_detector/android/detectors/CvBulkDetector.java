@@ -1,16 +1,28 @@
 package io.github.ppo_birds_detector.android.detectors;
 
-import org.opencv.android.CameraBridgeViewBase;
+import android.graphics.Bitmap;
+import android.os.Environment;
+import android.util.Log;
+
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import io.github.ppo_birds_detector.android.Bezier;
 import io.github.ppo_birds_detector.android.DetectedObject;
 import io.github.ppo_birds_detector.android.DetectorView;
 
@@ -18,7 +30,8 @@ import io.github.ppo_birds_detector.android.DetectorView;
  * Created by ike on 17/05/15.
  */
 public class CvBulkDetector extends CvDetector {
-    private static final double THRESHOLD_DETECT = 10.5;
+    private static final double THRESHOLD_DETECT = 0.5;
+    private static final String TAG = "CvBulkDetector";
     public static int BLOCKS_H = 20;
     public static int BLOCKS_V = 15;
     public static float THRESHOLD = 30.0f;
@@ -33,6 +46,9 @@ public class CvBulkDetector extends CvDetector {
     private Mat mErosionElement;
     private boolean mDisplayRaw;
     private float mRatio;
+    private Mat mBezierLUT;
+    private Mat mDilationElement;
+    private int count;
 
     @Override
     public void onStart() {
@@ -42,15 +58,31 @@ public class CvBulkDetector extends CvDetector {
         mEroded = new Mat();
 
         int erosion_size = 1;
-        mErosionElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,
+        mErosionElement = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE,
                 new Size(2 * erosion_size + 1, 2 * erosion_size + 1),
                 new Point(erosion_size, erosion_size));
+
+        int dilation_size = 2;
+        mDilationElement = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE,
+                new Size(2 * dilation_size + 1, 2 * dilation_size + 1),
+                new Point(dilation_size, dilation_size));
 
         mDisplayRaw = false;
 
         mRatio = 4.0f / 3.0f;
         if (mDetectorView != null)
             mRatio = mDetectorView.getWidth() / mDetectorView.getHeight();
+
+        mBezierLUT = new Mat(1, 256, CvType.CV_8U);
+        Bezier bezier = new Bezier(0.5f, 0.0f, 0.5f, 1.0f);
+//        Bezier bezier = new Bezier(0.73f, 0.04f, 0.38f, 0.83f);
+        for (int i = 0; i < 256; ++i) {
+            float val = 255 * bezier.getValue(i / 255.0f, 255);
+            mBezierLUT.row(0).col(i).setTo(new Scalar(val));
+        }
+
+
+        count = 0;
     }
 
     @Override
@@ -128,20 +160,79 @@ public class CvBulkDetector extends CvDetector {
 //        Imgproc.cvtColor(background, mHsvBackgroundMat, Imgproc.COLOR_BGR2HSV);
 //        Imgproc.cvtColor(current, mHsvCurrentMat, Imgproc.COLOR_BGR2HSV);
 
-        // Difference
+        Mat frame = new Mat();
+//        Mat dilated = new Mat();
+//        int dilation_size = 10;
+//        Mat dilationElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,
+//                new Size(2 * dilation_size + 1, 2 * dilation_size + 1),
+//                new Point(dilation_size, dilation_size));
 
-        Core.absdiff(background, current, mDiff);
+//        float THRESHOLD = 50.0f;
+        Mat bg2 = new Mat();
+        Mat cur2 = new Mat();
+//        Imgproc.medianBlur(background, bg2, 5);
+//        Imgproc.medianBlur(current, cur2, 5);
+//        Core.absdiff(bg2, cur2, frame);
+//        Core.absdiff(background, current, frame);
+//        Imgproc.blur(background, bg2, new Size(3, 3));
+//        Imgproc.blur(current, cur2, new Size(3, 3));
+        Core.subtract(background, current, frame);
+//        Mat foregroundMask = Mat.zeros(frame.rows(), frame.cols(), CvType.CV_8UC1);
 
-        // Threshold
+        Mat afterLut = new Mat();
+        Mat eroded = new Mat();
 
-        Mat foregroundMask = Mat.zeros(mDiff.rows(), mDiff.cols(), CvType.CV_8UC1);
-        Imgproc.threshold(mDiff, foregroundMask, THRESHOLD, 255, 0);
+        Core.LUT(frame, mBezierLUT, afterLut);
+        Imgproc.threshold(afterLut, frame, 15.0, 255, 0);
+        Imgproc.erode(frame, eroded, mErosionElement);
+        Imgproc.dilate(eroded, frame, mDilationElement);
 
-        // Erosion
+        Core.addWeighted(current, 0.4, frame, 0.6, 0.0, cur2);
+//        // Difference
+//
+//        Core.absdiff(background, current, mDiff);
+//
+//        // Threshold
+//
+//        Mat foregroundMask = Mat.zeros(mDiff.rows(), mDiff.cols(), CvType.CV_8UC1);
+//        Imgproc.threshold(mDiff, foregroundMask, THRESHOLD, 255, 0);
+//
+//        // Erosion
+//
+//        Imgproc.erode(foregroundMask, mEroded, mErosionElement);
 
-        Imgproc.erode(foregroundMask, mEroded, mErosionElement);
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "MyAppDir");
 
-        return mEroded;
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                Log.e(TAG, "failed to create directory");
+                return null;
+            }
+        }
+
+        final Bitmap bmp = Bitmap.createBitmap(1280, 720, Bitmap.Config.ARGB_8888);
+        org.opencv.android.Utils.matToBitmap(cur2, bmp);
+        String path = mediaStorageDir.getPath() + File.separator + "testimage_" + count + ".png";
+        Log.d(TAG, "Path: " + path);
+        File mediaFile = new File(path);
+        OutputStream stream = null;
+        try {
+            stream = new FileOutputStream(mediaFile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        bmp.compress(Bitmap.CompressFormat.PNG, 80, stream);
+        try {
+            if (stream != null) {
+                stream.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ++count;
+
+        return cur2;
     }
 
     protected List<DetectedObject> findDetectedObjects(Mat frame, List<DetectedObject> detectedObjects) {

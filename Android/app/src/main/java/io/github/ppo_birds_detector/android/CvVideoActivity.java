@@ -76,7 +76,7 @@ public class CvVideoActivity extends Activity {
 
         mDetectorView = (DetectorView) findViewById(R.id.detector);
 
-        mDetector = new CvBlockDetector();
+        mDetector = new CvBulkDetector();
         mDetector.setDetectorView(mDetectorView);
 
         mLayout = (FrameLayout) findViewById(R.id.layout);
@@ -112,19 +112,18 @@ public class CvVideoActivity extends Activity {
                     String path = c.getString(c.getColumnIndex(MediaStore.MediaColumns.DATA));
                     c.close();
                     Log.d("TAG", path);
-                    final Bitmap bmp = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
+                    final Bitmap bmp = Bitmap.createBitmap(1280, 720, Bitmap.Config.ARGB_8888);
                     mDetector.onStart();
                     mExtractor.setFrameListener(mHandler, new ExtractMpegFrames.OnFrameListener() {
                         @Override
                         public void onFrame(ByteBuffer bytes) {
 //                            bmp.copyPixelsFromBuffer(bytes);
                             Log.d("TAG", "-------------- AFTER FRAME");
-                            Mat rgba = new Mat(480, 640, CvType.CV_8UC4);
+                            Mat rgba = new Mat(720, 1280, CvType.CV_8UC4);
                             rgba.put(0, 0, bytes.array());
                             Mat gray = new Mat();
                             Imgproc.cvtColor(rgba, gray, Imgproc.COLOR_BGRA2GRAY);
                             Mat frame = mDetector.onFrame(rgba, gray);
-                            Log.d(TAG, "w " + rgba.width() + " h" + rgba.height());
                             org.opencv.android.Utils.matToBitmap(frame, bmp);
                             mImageView.setImageBitmap(bmp);
                             mImageView.invalidate();

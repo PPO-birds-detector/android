@@ -124,8 +124,8 @@ public class ExtractMpegFrames {
         MediaCodec decoder = null;
         CodecOutputSurface outputSurface = null;
         MediaExtractor extractor = null;
-        int saveWidth = 640;
-        int saveHeight = 480;
+        int saveWidth = 1280;
+        int saveHeight = 720;
 
         try {
             File inputFile = new File(path);   // must be an absolute path
